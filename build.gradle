@@ -16,3 +16,8 @@ repositories {
     mavenCentral()
     mavenLocal()
 }
+
+// Removing Version from Output File
+jar {
+    version = null
+}
