@@ -14,6 +14,6 @@ public class UploadTask extends DefaultTask {
             return;
         }
 
-        System.out.println("Uploading to "+extension.getHost()+" with user "+extension.getUsername());
+        System.out.println("Uploading to "+extension.host+" with user "+extension.username);
     }
 }
