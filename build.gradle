@@ -18,7 +18,7 @@ repositories {
     jcenter()
 
     maven {
-        "com.github.jengelman.gradle.plugins:shadow:4.0.2"
+        url "com.github.jengelman.gradle.plugins:shadow:4.0.2"
     }
 }
 
