@@ -16,10 +16,6 @@ repositories {
     mavenCentral()
     mavenLocal()
     jcenter()
-
-    maven {
-        url "com.github.jengelman.gradle.plugins:shadow:4.0.2"
-    }
 }
 
 // Removing Version from Output File
