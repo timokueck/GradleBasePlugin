@@ -6,20 +6,13 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven'
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
-    }
-}
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
     compile gradleApi()
+
+    compile 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
 
     testCompile 'junit:junit:4.12'
 }
