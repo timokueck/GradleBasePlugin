@@ -13,7 +13,7 @@ dependencies {
     compile gradleApi()
 
     //compile 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
-    implementation name: 'shadow-5.2.0-SNAPSHOT';
+    implementation 'me.TechsCode:shadow-5.2.0-SNAPSHOT:5.2.0';
 }
 
 repositories {
