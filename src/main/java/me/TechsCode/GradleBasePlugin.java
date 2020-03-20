@@ -17,7 +17,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         System.out.println("Applying Plugin "+(new File(".").getAbsolutePath()));
         System.out.println(project.getBuildDir().getAbsoluteFile().getAbsolutePath());
 
-        project.getPluginManager().apply(com.github.jengelman.gradle.plugins.shadow.ShadowPlugin.class);
+        project.getPluginManager().apply("com.github.johnrengelman.shadow");
         project.getTasksByName("build", false).stream().findFirst().get().dependsOn("shadowJar");
 
         project.setProperty("sourceCompatibility", "1.8");
