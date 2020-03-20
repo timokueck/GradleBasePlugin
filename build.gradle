@@ -9,25 +9,21 @@ apply plugin: 'maven'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
-    }
-}
-
 dependencies {
     compile gradleApi()
 
-    compile 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
+    //compile 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
+    implementation name: 'shadow-5.2.0-SNAPSHOT';
 }
 
 repositories {
     mavenCentral()
     mavenLocal()
     jcenter()
+
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 // Removing Version from Output File
