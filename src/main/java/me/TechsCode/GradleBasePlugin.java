@@ -27,6 +27,10 @@ public class GradleBasePlugin implements Plugin<Project> {
         MetaExtension meta = project.getExtensions().create("meta", MetaExtension.class);
         UploadExtension uploadExtension = project.getExtensions().create("upload", UploadExtension.class);
 
+        System.out.println(meta.version);
+        System.out.println(uploadExtension.host);
+        System.out.println(uploadExtension.password);
+
         if(meta.validate()){
             log();
             log(Color.RED+"Please check the GitHub page of GradleBasePlugin for more information");
