@@ -31,6 +31,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         MetaExtension meta = project.getExtensions().getByType(MetaExtension.class);
         UploadExtension uploadExtension = project.getExtensions().getByType(UploadExtension.class);
 
+        project.getTasks().create("upload", UploadTask.class); //  when removing uncomment original
         System.out.println(meta.version);
         System.out.println(uploadExtension.host);
         System.out.println("lol");
@@ -41,12 +42,13 @@ public class GradleBasePlugin implements Plugin<Project> {
             return;
         }
 
+        /*
         if(uploadExtension.validate()){
             log();
             log(Color.RED+"Please check your SFTP Upload Settings and retry.");
             return;
         }
-
+*/
         GitInteractor.initialize(project.getProjectDir());
 
         log(Color.GREEN_BOLD_BRIGHT+"Configuring Gradle Project - Build Settings...");
@@ -58,7 +60,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         project.setProperty("sourceCompatibility", "1.8");
         project.setProperty("targetCompatibility", "1.8");
 
-        project.getTasks().create("upload", UploadTask.class);
+        //project.getTasks().create("upload", UploadTask.class);
         project.getTasks().create("dev", DevTask.class);
 
         project.getPlugins().apply("com.github.johnrengelman.shadow");

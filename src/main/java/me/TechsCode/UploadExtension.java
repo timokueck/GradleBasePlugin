@@ -7,6 +7,8 @@ public class UploadExtension {
 
     public String host, username, password, path;
 
+    /*
+
     public boolean validate() {
         // If all fields are unset, it is not configured
         if(!isConfigured()){
@@ -38,5 +40,5 @@ public class UploadExtension {
 
     public boolean isConfigured(){
         return !(host == null && username == null && password == null && path == null);
-    }
+    }*/
 }
