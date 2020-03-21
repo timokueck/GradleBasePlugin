@@ -1,6 +1,6 @@
 package me.TechsCode;
 
-public class MetaExtension {
+public class MetaExtension implements ValidatableExtension {
 
     public String version;
 

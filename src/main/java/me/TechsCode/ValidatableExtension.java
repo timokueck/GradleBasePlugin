@@ -1,7 +1,5 @@
 package me.TechsCode;
 
-import java.util.List;
-
 public interface ValidatableExtension {
 
     /*

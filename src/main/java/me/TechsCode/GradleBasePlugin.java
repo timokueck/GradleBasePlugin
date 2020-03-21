@@ -1,6 +1,7 @@
 package me.TechsCode;
 
 import groovy.lang.Closure;
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.initialization.Settings;
@@ -28,43 +29,37 @@ public class GradleBasePlugin implements Plugin<Project> {
         project.getExtensions().create("meta", MetaExtension.class);
         project.getExtensions().create("upload", UploadExtension.class);
 
-        MetaExtension meta = project.getExtensions().getByType(MetaExtension.class);
-        UploadExtension uploadExtension = project.getExtensions().getByType(UploadExtension.class);
-
-        project.getTasks().create("upload", UploadTask.class); //  when removing uncomment original
-        System.out.println(meta.version);
-        System.out.println(uploadExtension.host);
-        System.out.println("lol");
-
-        if(meta.validate()){
-            log();
-            log(Color.RED+"Please check the GitHub page of GradleBasePlugin for more information");
-            return;
-        }
-
-        /*
-        if(uploadExtension.validate()){
-            log();
-            log(Color.RED+"Please check your SFTP Upload Settings and retry.");
-            return;
-        }
-*/
-        GitInteractor.initialize(project.getProjectDir());
-
-        log(Color.GREEN_BOLD_BRIGHT+"Configuring Gradle Project - Build Settings...");
-        log();
-        log("Project Info:");
-        log("Plugin: "+project.getName()+" on Version: "+meta.version);
-
-        project.setProperty("version", meta.version);
-        project.setProperty("sourceCompatibility", "1.8");
-        project.setProperty("targetCompatibility", "1.8");
-
-        //project.getTasks().create("upload", UploadTask.class);
+        project.getTasks().create("upload", UploadTask.class);
         project.getTasks().create("dev", DevTask.class);
 
         project.getPlugins().apply("com.github.johnrengelman.shadow");
         project.getTasksByName("build", false).stream().findFirst().get().dependsOn("shadowJar");
+
+        project.afterEvaluate((p) -> {
+            MetaExtension meta = project.getExtensions().getByType(MetaExtension.class);
+            UploadExtension upload = project.getExtensions().getByType(UploadExtension.class);
+
+            if(meta.validate()){
+                log();
+                log(Color.RED+"Please check the GitHub page of GradleBasePlugin for more information");
+                return;
+            }
+
+            if(upload.validate()){
+                log();
+                log(Color.RED+"Please check your SFTP Upload Settings and retry.");
+                return;
+            }
+
+            log(Color.GREEN_BOLD_BRIGHT+"Configuring Gradle Project - Build Settings...");
+            log();
+            log("Project Info:");
+            log("Plugin: "+project.getName()+" on Version: "+meta.version);
+
+            project.setProperty("version", meta.version);
+            project.setProperty("sourceCompatibility", "1.8");
+            project.setProperty("targetCompatibility", "1.8");
+        });
 
 
         /*

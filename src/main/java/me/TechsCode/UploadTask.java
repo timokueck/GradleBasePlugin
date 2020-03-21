@@ -9,11 +9,11 @@ public class UploadTask extends DefaultTask {
     public void upload(){
         UploadExtension extension = getProject().getExtensions().findByType(UploadExtension.class);
 
-        if (extension == null) {
+        if (!extension.isConfigured()) {
             GradleBasePlugin.log("Could not find defined Upload Settings to upload the compiled jar");
             return;
         }
 
-        GradleBasePlugin.log("Uploading to "+extension.host+" with user "+extension.username);
+        GradleBasePlugin.log("Uploading to "+extension.host+" with User "+extension.username+" in "+extension.path);
     }
 }
