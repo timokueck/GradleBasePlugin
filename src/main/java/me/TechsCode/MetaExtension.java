@@ -2,7 +2,7 @@ package me.TechsCode;
 
 public class MetaExtension {
 
-    private String version;
+    public String version;
 
     public boolean validate() {
         if(version == null){
@@ -13,13 +13,6 @@ public class MetaExtension {
         return false;
     }
 
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
 }
 
 

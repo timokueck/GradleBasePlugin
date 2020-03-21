@@ -28,7 +28,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         MetaExtension meta = project.getExtensions().create("meta", MetaExtension.class);
         UploadExtension uploadExtension = project.getExtensions().create("upload", UploadExtension.class);
 
-        System.out.println(meta.getVersion());
+        System.out.println(meta.version);
         System.out.println(uploadExtension.host);
 
         if(meta.validate()){
@@ -48,9 +48,9 @@ public class GradleBasePlugin implements Plugin<Project> {
         log(Color.GREEN_BOLD_BRIGHT+"Configuring Gradle Project - Build Settings...");
         log();
         log("Project Info:");
-        log("Plugin: "+project.getName()+" on Version: "+meta.getVersion());
+        log("Plugin: "+project.getName()+" on Version: "+meta.version);
 
-        project.setProperty("version", meta.getVersion());
+        project.setProperty("version", meta.version);
         project.setProperty("sourceCompatibility", "1.8");
         project.setProperty("targetCompatibility", "1.8");
 
