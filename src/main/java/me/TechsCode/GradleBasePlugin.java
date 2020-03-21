@@ -25,8 +25,11 @@ public class GradleBasePlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        MetaExtension meta = project.getExtensions().create("meta", MetaExtension.class);
-        UploadExtension uploadExtension = project.getExtensions().create("upload", UploadExtension.class);
+        project.getExtensions().create("meta", MetaExtension.class);
+        project.getExtensions().create("upload", UploadExtension.class);
+
+        MetaExtension meta = project.getExtensions().getByType(MetaExtension.class);
+        UploadExtension uploadExtension = project.getExtensions().getByType(UploadExtension.class);
 
         System.out.println(meta.version);
         System.out.println(uploadExtension.host);
