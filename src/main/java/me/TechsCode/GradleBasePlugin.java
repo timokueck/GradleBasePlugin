@@ -15,7 +15,7 @@ import java.util.HashSet;
 public class GradleBasePlugin implements Plugin<Project> {
 
     public static void log(String message){
-        System.out.println(Color.WHITE_BRIGHT+message);
+        System.out.println(Color.BLACK_BOLD+message);
     }
 
     public static void log(){
@@ -54,7 +54,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         project.getPlugins().apply("com.github.johnrengelman.shadow");
         project.getTasksByName("build", false).stream().findFirst().get().dependsOn("shadowJar");
 
-
+        GitInteractor.initialize(project.getProjectDir());
 
         /*
 
