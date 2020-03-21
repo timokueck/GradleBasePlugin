@@ -17,13 +17,21 @@ public class GradleBasePlugin implements Plugin<Project> {
         System.out.println("Applying Plugin "+(new File(".").getAbsolutePath()));
         System.out.println(project.getBuildDir().getAbsoluteFile().getAbsolutePath());
 
+        UploadExtension uploadExtension = project.getExtensions().create("upload", UploadExtension.class);
+        MetaExtension meta = project.getExtensions().create("meta", MetaExtension.class);
 
-        project.getRepositories().jcenter();
-        project.getPlugins().apply("com.github.johnrengelman.shadow");
-        project.getTasksByName("build", false).stream().findFirst().get().dependsOn("shadowJar");
+        System.out.println(uploadExtension);
+        System.out.println(meta.version);
 
+        project.setProperty("version", meta.version);
         project.setProperty("sourceCompatibility", "1.8");
         project.setProperty("targetCompatibility", "1.8");
+
+        project.getTasks().create("upload", UploadTask.class);
+        project.getTasks().create("dev", DevTask.class);
+
+        project.getPlugins().apply("com.github.johnrengelman.shadow");
+        project.getTasksByName("build", false).stream().findFirst().get().dependsOn("shadowJar");
 
         /*
 
@@ -44,10 +52,7 @@ public class GradleBasePlugin implements Plugin<Project> {
                 "net.md-5:bungeecord-api:1.12-SNAPSHOT"
         };
 
-        project.getDependencies().add("compileOnly", compileOnlyDependencies);
-
-        project.getExtensions().create("upload", UploadExtension.class);
-        project.getTasks().create("upload", UploadTask.class);*/
+        project.getDependencies().add("compileOnly", compileOnlyDependencies);*/
     }
 
 
