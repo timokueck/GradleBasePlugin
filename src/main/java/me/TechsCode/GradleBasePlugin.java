@@ -25,6 +25,8 @@ public class GradleBasePlugin implements Plugin<Project> {
         project.setProperty("sourceCompatibility", "1.8");
         project.setProperty("targetCompatibility", "1.8");
 
+        /*
+
         String[] repositories = new String[]{
                 "https://hub.spigotmc.org/nexus/content/repositories/snapshots/",
                 "https://oss.sonatype.org/content/repositories/snapshots",
@@ -45,7 +47,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         project.getDependencies().add("compileOnly", compileOnlyDependencies);
 
         project.getExtensions().create("upload", UploadExtension.class);
-        project.getTasks().create("upload", UploadTask.class);
+        project.getTasks().create("upload", UploadTask.class);*/
     }
 
 
