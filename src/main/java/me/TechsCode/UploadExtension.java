@@ -15,22 +15,22 @@ public class UploadExtension implements ValidatableExtension {
         }
 
         if(host == null){
-            System.out.println("The 'host' setting has not been specified. Example of a hostname is 'somedomain.com' or an ip address");
+            GradleBasePlugin.log("The 'host' setting has not been specified. Example of a hostname is 'somedomain.com' or an ip address");
             return true;
         }
 
         if(username == null){
-            System.out.println("The 'username' Setting has not been specified, Please use a valid ftp user with access rights");
+            GradleBasePlugin.log("The 'username' Setting has not been specified, Please use a valid ftp user with access rights");
             return true;
         }
 
         if(password == null){
-            System.out.println("The 'password' Setting has not been specified, Please use the valid password for user '"+username+"'");
+            GradleBasePlugin.log("The 'password' Setting has not been specified, Please use the valid password for user '"+username+"'");
             return true;
         }
 
         if(path == null){
-            System.out.println("The 'path' Setting has not been specified, Please use an absolute path to the folder on the server");
+            GradleBasePlugin.log("The 'path' Setting has not been specified, Please use an absolute path to the folder on the server");
             return true;
         }
 

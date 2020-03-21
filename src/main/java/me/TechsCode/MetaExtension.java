@@ -7,7 +7,7 @@ public class MetaExtension implements ValidatableExtension {
     @Override
     public boolean validate() {
         if(version == null){
-            System.out.println("Could not find a 'meta' section with a 'version' field in your build.gradle");
+            GradleBasePlugin.log("Could not find a 'meta' section with a 'version' field in your build.gradle");
         }
 
         return false;
