@@ -2,7 +2,7 @@ package me.TechsCode;
 
 public class MetaExtension implements ValidatableExtension {
 
-    public String version;
+    private String version;
 
     @Override
     public boolean validate() {
@@ -13,5 +13,14 @@ public class MetaExtension implements ValidatableExtension {
 
         return false;
     }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
 }
+
 

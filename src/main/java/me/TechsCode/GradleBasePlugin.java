@@ -3,6 +3,7 @@ package me.TechsCode;
 import groovy.lang.Closure;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.initialization.Settings;
 import org.gradle.internal.impldep.org.eclipse.jgit.api.Git;
 import org.gradle.internal.impldep.org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.internal.impldep.org.eclipse.jgit.lib.Repository;
@@ -27,7 +28,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         MetaExtension meta = project.getExtensions().create("meta", MetaExtension.class);
         UploadExtension uploadExtension = project.getExtensions().create("upload", UploadExtension.class);
 
-        System.out.println(meta.version);
+        System.out.println(meta.getVersion());
         System.out.println(uploadExtension.host);
         System.out.println(uploadExtension.password);
 
@@ -43,12 +44,14 @@ public class GradleBasePlugin implements Plugin<Project> {
             return;
         }
 
+        GitInteractor.initialize(project.getProjectDir());
+
         log(Color.GREEN_BOLD_BRIGHT+"Configuring Gradle Project - Build Settings...");
         log();
         log("Project Info:");
-        log("Plugin: "+project.getName()+" on Version: "+meta.version);
+        log("Plugin: "+project.getName()+" on Version: "+meta.getVersion());
 
-        project.setProperty("version", meta.version);
+        project.setProperty("version", meta.getVersion());
         project.setProperty("sourceCompatibility", "1.8");
         project.setProperty("targetCompatibility", "1.8");
 
@@ -58,7 +61,6 @@ public class GradleBasePlugin implements Plugin<Project> {
         project.getPlugins().apply("com.github.johnrengelman.shadow");
         project.getTasksByName("build", false).stream().findFirst().get().dependsOn("shadowJar");
 
-        GitInteractor.initialize(project.getProjectDir());
 
         /*
 
