@@ -16,14 +16,6 @@ import java.util.HashSet;
 
 public class GradleBasePlugin implements Plugin<Project> {
 
-    public static void log(String message){
-        System.out.println(Color.BLACK_BOLD+message);
-    }
-
-    public static void log(){
-        System.out.println();
-    }
-
     @Override
     public void apply(Project project) {
         project.getExtensions().create("meta", MetaExtension.class);
@@ -59,16 +51,21 @@ public class GradleBasePlugin implements Plugin<Project> {
             project.setProperty("version", meta.version);
             project.setProperty("sourceCompatibility", "1.8");
             project.setProperty("targetCompatibility", "1.8");
+
+            project.getDependencies().add("compile", "com.github.techscode:baseplugin:"+meta.baseVersion);
         });
 
+        project.getRepositories().jcenter();
+        project.getRepositories().mavenLocal();
+        project.getRepositories().mavenCentral();
 
-        String[] repositories = new String[]{
+        String[] userRepositories = new String[]{
                 "https://hub.spigotmc.org/nexus/content/repositories/snapshots/",
                 "https://oss.sonatype.org/content/repositories/snapshots",
                 "https://jitpack.io"
         };
 
-        for(String repository : repositories){
+        for(String repository : userRepositories){
             project.getRepositories().maven((maven) -> maven.setUrl(repository));
         }
 
@@ -88,5 +85,12 @@ public class GradleBasePlugin implements Plugin<Project> {
         project.getDependencies().add("compileOnly", compileOnlyDependencies);*/
     }
 
+    public static void log(String message){
+        System.out.println(Color.BLACK_BOLD+message);
+    }
+
+    public static void log(){
+        System.out.println();
+    }
 
 }
