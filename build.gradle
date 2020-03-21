@@ -11,6 +11,8 @@ targetCompatibility = 1.8
 
 dependencies {
     compile gradleApi()
+
+    runtime "com.github.jengelman.gradle.plugins:shadow:5.2.0"
 }
 
 repositories {

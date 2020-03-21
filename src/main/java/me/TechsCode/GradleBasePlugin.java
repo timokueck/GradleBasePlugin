@@ -19,7 +19,7 @@ public class GradleBasePlugin implements Plugin<Project> {
 
         //project.getPluginManager().apply("com.github.johnrengelman.shadow");
         project.getDependencies().add("runtime", "com.github.jengelman.gradle.plugins:shadow:5.2.0");
-        project.getPlugins().apply(com.github.jengelman.gradle.plugins.shadow.ShadowPlugin.class);
+        project.getPlugins().apply("com.github.johnrengelman.shadow");
         project.getTasksByName("build", false).stream().findFirst().get().dependsOn("shadowJar");
 
         project.setProperty("sourceCompatibility", "1.8");
