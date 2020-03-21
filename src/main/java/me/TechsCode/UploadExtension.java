@@ -3,11 +3,10 @@ package me.TechsCode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadExtension implements ValidatableExtension {
+public class UploadExtension {
 
     public String host, username, password, path;
 
-    @Override
     public boolean validate() {
         // If all fields are unset, it is not configured
         if(!isConfigured()){
