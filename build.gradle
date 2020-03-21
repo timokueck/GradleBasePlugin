@@ -22,6 +22,7 @@ dependencies {
     compile gradleApi()
 
     runtime "com.github.jengelman.gradle.plugins:shadow:5.2.0"
+    compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.7.0.202003110725-r'
 }
 
 repositories {

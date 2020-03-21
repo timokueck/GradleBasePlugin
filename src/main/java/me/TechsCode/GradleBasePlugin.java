@@ -11,17 +11,27 @@ import java.util.HashSet;
 
 public class GradleBasePlugin implements Plugin<Project> {
 
-
     @Override
     public void apply(Project project) {
-        System.out.println("Applying Plugin "+(new File(".").getAbsolutePath()));
-        System.out.println(project.getBuildDir().getAbsoluteFile().getAbsolutePath());
-
-        UploadExtension uploadExtension = project.getExtensions().create("upload", UploadExtension.class);
         MetaExtension meta = project.getExtensions().create("meta", MetaExtension.class);
+        UploadExtension uploadExtension = project.getExtensions().create("upload", UploadExtension.class);
 
-        System.out.println(uploadExtension);
-        System.out.println(meta.version);
+        if(meta.validate()){
+            System.out.println();
+            System.out.println(Color.RED+"Please check the GitHub page of GradleBasePlugin for more information");
+            return;
+        }
+
+        if(uploadExtension.validate()){
+            System.out.println();
+            System.out.println(Color.RED+"Please check your SFTP Upload Settings and retry.");
+            return;
+        }
+
+        System.out.println(Color.GREEN_BOLD_BRIGHT+"Configuring Gradle Project - Build Settings...");
+        System.out.println();
+        System.out.println("Project Info:");
+        System.out.println("Plugin: "+Color.WHITE+project.getName()+Color.RESET+" on Version: "+Color.WHITE+meta.version);
 
         project.setProperty("version", meta.version);
         project.setProperty("sourceCompatibility", "1.8");
