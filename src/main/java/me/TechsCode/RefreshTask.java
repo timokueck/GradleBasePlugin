@@ -8,7 +8,5 @@ public class RefreshTask extends DefaultTask {
     @TaskAction
     public void refresh(){
         GradleBasePlugin.log("Updating BasePlugin to get newest changes...");
-
-        GitInteractor.instance.refresh();
     }
 }

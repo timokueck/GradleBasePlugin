@@ -62,13 +62,17 @@ public class GradleBasePlugin implements Plugin<Project> {
         });
 
 
-        /*
-
         String[] repositories = new String[]{
                 "https://hub.spigotmc.org/nexus/content/repositories/snapshots/",
                 "https://oss.sonatype.org/content/repositories/snapshots",
                 "https://jitpack.io"
         };
+
+        for(String repository : repositories){
+            project.getRepositories().maven((maven) -> maven.setUrl(repository));
+        }
+
+        /*
 
         project.getRepositories().maven((maven) -> maven.setArtifactUrls(new HashSet<String>(Arrays.asList(repositories))));
         project.getRepositories().jcenter();
