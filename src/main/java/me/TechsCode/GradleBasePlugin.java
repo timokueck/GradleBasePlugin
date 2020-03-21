@@ -33,6 +33,7 @@ public class GradleBasePlugin implements Plugin<Project> {
 
         System.out.println(meta.version);
         System.out.println(uploadExtension.host);
+        System.out.println("lol");
 
         if(meta.validate()){
             log();
