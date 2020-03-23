@@ -9,8 +9,15 @@ import org.gradle.internal.impldep.org.eclipse.jgit.api.Git;
 import org.gradle.internal.impldep.org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.internal.impldep.org.eclipse.jgit.lib.Repository;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -47,11 +54,15 @@ public class GradleBasePlugin implements Plugin<Project> {
             log();
             log("Project Info:");
             log("Plugin: "+project.getName()+" on Version: "+meta.version);
+            log();
+
+            downloadBasePlugin(new File("libs/BasePlugin.jar"));
 
             project.setProperty("version", meta.version);
             project.setProperty("sourceCompatibility", "1.8");
             project.setProperty("targetCompatibility", "1.8");
 
+            //project.getDependencies().add("compile", "com.github.techscode:baseplugin:"+meta.baseVersion);
             project.getDependencies().add("compile", "com.github.techscode:baseplugin:"+meta.baseVersion);
         });
 
@@ -93,4 +104,22 @@ public class GradleBasePlugin implements Plugin<Project> {
         System.out.println();
     }
 
+    public void downloadBasePlugin(File outputFile){
+        outputFile.delete();
+
+        try {
+            URL url = new URL("https://api.github.com/repos/techscode/baseplugin/releases/assets/b5/baseplugin.jar?access_token=<token>");
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestProperty("Accept", "application/octet-stream");
+            ReadableByteChannel uChannel = Channels.newChannel(connection.getInputStream());
+            FileOutputStream foStream = new FileOutputStream(outputFile.getAbsolutePath());
+            FileChannel fChannel = foStream.getChannel();
+            fChannel.transferFrom(uChannel, 0, Long.MAX_VALUE);
+            uChannel.close();
+            foStream.close();
+            fChannel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
