@@ -107,6 +107,11 @@ public class GradleBasePlugin implements Plugin<Project> {
 
     public void downloadBasePlugin(File outputFile, String version){
         outputFile.delete();
+        try {
+            outputFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         String token = System.getenv("GITHUB_TOKEN");
 
