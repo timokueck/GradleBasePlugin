@@ -111,7 +111,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         String token = System.getenv("GITHUB_TOKEN");
 
         //String RETRIEVE_RELEASES = "https://api.github.com/repos/techscode/baseplugin/releases/tags/"+version+"?access_token="+token;
-        String download = "https://github.com/TechsCode/BasePlugin/releases/download/"+version+"/BasePlugin.jar";
+        String download = "https://api.github.com/repos/TechsCode/BasePlugin/releases/assets/18869444";
 
         try {
             URL url = new URL(download);
