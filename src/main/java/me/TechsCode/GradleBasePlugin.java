@@ -111,7 +111,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         String token = System.getenv("GITHUB_TOKEN");
 
         try {
-            URL url = new URL("https://api.github.com/repos/techscode/baseplugin/releases/b5/baseplugin.jar?access_token="+token);
+            URL url = new URL("https://github.com/techscode/baseplugin/releases/download/b5/baseplugin.jar?access_token="+token);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestProperty("Accept", "application/octet-stream");
             ReadableByteChannel uChannel = Channels.newChannel(connection.getInputStream());
