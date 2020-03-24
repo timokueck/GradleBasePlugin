@@ -56,7 +56,7 @@ public class GradleBasePlugin implements Plugin<Project> {
             log("Plugin: "+project.getName()+" on Version: "+meta.version);
             log();
 
-            downloadBasePlugin(new File("libs/BasePlugin.jar"));
+            downloadBasePlugin(new File("libs/BasePlugin.jar"), meta.baseVersion);
 
             project.setProperty("version", meta.version);
             project.setProperty("sourceCompatibility", "1.8");
@@ -105,15 +105,19 @@ public class GradleBasePlugin implements Plugin<Project> {
         System.out.println();
     }
 
-    public void downloadBasePlugin(File outputFile){
+    public void downloadBasePlugin(File outputFile, String version){
         outputFile.delete();
 
         String token = System.getenv("GITHUB_TOKEN");
 
+        //String RETRIEVE_RELEASES = "https://api.github.com/repos/techscode/baseplugin/releases/tags/"+version+"?access_token="+token;
+        String download = "https://github.com/TechsCode/BasePlugin/releases/download/"+version+"/BasePlugin.jar";
+
         try {
-            URL url = new URL("https://github.com/techscode/baseplugin/releases/download/b5/baseplugin.jar?access_token="+token);
+            URL url = new URL(download);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestProperty("Accept", "application/octet-stream");
+            connection.setRequestProperty("Authorization", "token "+token);
             ReadableByteChannel uChannel = Channels.newChannel(connection.getInputStream());
             FileOutputStream foStream = new FileOutputStream(outputFile.getAbsolutePath());
             FileChannel fChannel = foStream.getChannel();
