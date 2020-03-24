@@ -13,6 +13,7 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -57,13 +58,14 @@ public class GradleBasePlugin implements Plugin<Project> {
             log();
 
             downloadBasePlugin(new File("libs"), meta.baseVersion);
+            createGitIgnore(new File(".gitignore"));
 
             project.setProperty("version", meta.version);
             project.setProperty("sourceCompatibility", "1.8");
             project.setProperty("targetCompatibility", "1.8");
 
             //project.getDependencies().add("compile", "com.github.techscode:baseplugin:"+meta.baseVersion);
-            project.getDependencies().add("compile", "com.github.techscode:baseplugin:"+meta.baseVersion);
+            project.getDependencies().add("compile", "files(\"/libs/BasePlugin.jar\")");
         });
 
         project.getRepositories().jcenter();
@@ -110,7 +112,8 @@ public class GradleBasePlugin implements Plugin<Project> {
 
         String token = System.getenv("GITHUB_TOKEN");
 
-        //String RETRIEVE_RELEASES = "https://api.github.com/repos/techscode/baseplugin/releases/tags/"+version+"?access_token="+token;
+        String RETRIEVE_RELEASES = "https://api.github.com/repos/techscode/baseplugin/releases/tags/"+version+"?access_token="+token;
+        System.out.println(RETRIEVE_RELEASES);
         String download = "https://api.github.com/repos/TechsCode/BasePlugin/releases/assets/18869444";
 
         try {
@@ -125,6 +128,33 @@ public class GradleBasePlugin implements Plugin<Project> {
             uChannel.close();
             foStream.close();
             fChannel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createGitIgnore(File file){
+        try {
+            file.delete();
+            file.createNewFile();
+
+            String[] lines = new String[]{
+                    "*.DS_Store",
+                    "*.iml",
+                    ".idea/",
+                    ".gradle/",
+                    "out/",
+                    "build/",
+                    "libs/"
+            };
+
+            PrintWriter writer = new PrintWriter(file, "UTF-8");
+
+            for(String line : lines){
+                writer.println(line);
+            }
+
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
