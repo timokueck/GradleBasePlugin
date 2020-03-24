@@ -33,8 +33,8 @@ public class GradleBasePlugin implements Plugin<Project> {
 
         project.getPlugins().apply("com.github.johnrengelman.shadow");
 
-        project.getTasksByName("build", false).stream().findFirst().get().dependsOn("generateMetaFiles");
         project.getTasksByName("build", false).stream().findFirst().get().dependsOn("shadowJar");
+        project.getTasksByName("shadowJar", false).stream().findFirst().get().dependsOn("generateMetaFiles");
 
         project.afterEvaluate((p) -> {
             MetaExtension meta = project.getExtensions().getByType(MetaExtension.class);
