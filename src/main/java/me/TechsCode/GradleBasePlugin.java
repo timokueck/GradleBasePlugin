@@ -56,20 +56,17 @@ public class GradleBasePlugin implements Plugin<Project> {
             log("Plugin: "+project.getName()+" on Version: "+meta.version);
             log();
 
-            if(System.getenv("GITHUB_TOKEN") == null){
-                log(Color.RED+"Missing environment variable called GITHUB_TOKEN that should contain your github token");
-                return;
-            }
+            if(System.getenv("GITHUB_TOKEN") != null){
+                log("Loading BasePlugin.jar from Github...");
 
-            log("Loading BasePlugin.jar from Github...");
+                try {
+                    downloadBasePlugin(new File("libs"), meta.baseVersion);
 
-            try {
-                downloadBasePlugin(new File("libs"), meta.baseVersion);
-
-                log("Done!");
-            } catch (ParseException | URISyntaxException | IOException e) {
-                log("Could not load BasePlugin from Github: "+e.getMessage());
-                return;
+                    log("Done!");
+                } catch (ParseException | URISyntaxException | IOException e) {
+                    log("Could not load BasePlugin from Github: "+e.getMessage());
+                    return;
+                }
             }
 
             createGitIgnore(new File(".gitignore"));
