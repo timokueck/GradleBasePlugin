@@ -56,7 +56,22 @@ public class GradleBasePlugin implements Plugin<Project> {
             log("Plugin: "+project.getName()+" on Version: "+meta.version);
             log();
 
-            downloadBasePlugin(new File("libs"), meta.baseVersion);
+            if(System.getenv("GITHUB_TOKEN") == null){
+                log(Color.RED+"Missing environment variable called GITHUB_TOKEN that should contain your github token");
+                return;
+            }
+
+            log("Loading BasePlugin.jar from Github...");
+
+            try {
+                downloadBasePlugin(new File("libs"), meta.baseVersion);
+
+                log("Done!");
+            } catch (ParseException | URISyntaxException | IOException e) {
+                log("Could not load BasePlugin from Github: "+e.getMessage());
+                return;
+            }
+
             createGitIgnore(new File(".gitignore"));
 
             project.setProperty("version", meta.version);
@@ -64,36 +79,31 @@ public class GradleBasePlugin implements Plugin<Project> {
             project.setProperty("targetCompatibility", "1.8");
 
             project.getDependencies().add("implementation", project.files("libs/BasePlugin.jar"));
+
+            project.getRepositories().jcenter();
+            project.getRepositories().mavenLocal();
+            project.getRepositories().mavenCentral();
+
+            String[] userRepositories = new String[]{
+                    "https://hub.spigotmc.org/nexus/content/repositories/snapshots/",
+                    "https://oss.sonatype.org/content/repositories/snapshots",
+                    "https://jitpack.io"
+            };
+
+            String[] compileOnlyDependencies = new String[]{
+                    "org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT",
+                    "org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT",
+                    "net.md-5:bungeecord-api:1.12-SNAPSHOT"
+            };
+
+            for(String repository : userRepositories){
+                project.getRepositories().maven((maven) -> maven.setUrl(repository));
+            }
+
+            for(String dependency : compileOnlyDependencies){
+                project.getDependencies().add("compileOnly", dependency);
+            }
         });
-
-        project.getRepositories().jcenter();
-        project.getRepositories().mavenLocal();
-        project.getRepositories().mavenCentral();
-
-        String[] userRepositories = new String[]{
-                "https://hub.spigotmc.org/nexus/content/repositories/snapshots/",
-                "https://oss.sonatype.org/content/repositories/snapshots",
-                "https://jitpack.io"
-        };
-
-        for(String repository : userRepositories){
-            project.getRepositories().maven((maven) -> maven.setUrl(repository));
-        }
-
-        /*
-
-        project.getRepositories().maven((maven) -> maven.setArtifactUrls(new HashSet<String>(Arrays.asList(repositories))));
-        project.getRepositories().jcenter();
-        project.getRepositories().mavenLocal();
-        project.getRepositories().mavenCentral();
-
-        String[] compileOnlyDependencies = new String[]{
-                "org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT",
-                "org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT",
-                "net.md-5:bungeecord-api:1.12-SNAPSHOT"
-        };
-
-        project.getDependencies().add("compileOnly", compileOnlyDependencies);*/
     }
 
     public static void log(String message){
@@ -104,35 +114,30 @@ public class GradleBasePlugin implements Plugin<Project> {
         System.out.println();
     }
 
-    public void downloadBasePlugin(File directory, String version){
+    public void downloadBasePlugin(File directory, String version) throws ParseException, URISyntaxException, IOException {
         directory.mkdirs();
 
         String token = System.getenv("GITHUB_TOKEN");
 
         String RETRIEVE_RELEASES = "https://api.github.com/repos/techscode/baseplugin/releases/tags/"+version+"?access_token="+token;
 
-        try {
-            JSONParser parser = new JSONParser();
-            String json = IOUtils.toString(new URI(RETRIEVE_RELEASES), "UTF-8");
-            JSONObject root = (JSONObject) parser.parse(json);
-            JSONArray assets = (JSONArray) root.get("assets");
-            JSONObject asset = (JSONObject) assets.get(0);
+        JSONParser parser = new JSONParser();
+        String json = IOUtils.toString(new URI(RETRIEVE_RELEASES), "UTF-8");
+        JSONObject root = (JSONObject) parser.parse(json);
+        JSONArray assets = (JSONArray) root.get("assets");
+        JSONObject asset = (JSONObject) assets.get(0);
 
-            URL url = new URL((String) asset.get("url"));
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-            connection.setRequestProperty("Accept", "application/octet-stream");
-            connection.setRequestProperty("Authorization", "token "+token);
-            ReadableByteChannel uChannel = Channels.newChannel(connection.getInputStream());
-            FileOutputStream foStream = new FileOutputStream(directory.getAbsolutePath()+"/BasePlugin.jar");
-            FileChannel fChannel = foStream.getChannel();
-            fChannel.transferFrom(uChannel, 0, Long.MAX_VALUE);
-            uChannel.close();
-            foStream.close();
-            fChannel.close();
-        } catch (ParseException | URISyntaxException | IOException e) {
-            e.printStackTrace();
-        }
-
+        URL url = new URL((String) asset.get("url"));
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        connection.setRequestProperty("Accept", "application/octet-stream");
+        connection.setRequestProperty("Authorization", "token "+token);
+        ReadableByteChannel uChannel = Channels.newChannel(connection.getInputStream());
+        FileOutputStream foStream = new FileOutputStream(directory.getAbsolutePath()+"/BasePlugin.jar");
+        FileChannel fChannel = foStream.getChannel();
+        fChannel.transferFrom(uChannel, 0, Long.MAX_VALUE);
+        uChannel.close();
+        foStream.close();
+        fChannel.close();
     }
 
     public void createGitIgnore(File file){
