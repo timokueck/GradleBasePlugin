@@ -1,13 +1,12 @@
 package me.TechsCode;
 
-import groovy.lang.Closure;
-import org.gradle.api.Action;
+import org.apache.commons.io.IOUtils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.initialization.Settings;
-import org.gradle.internal.impldep.org.eclipse.jgit.api.Git;
-import org.gradle.internal.impldep.org.eclipse.jgit.api.errors.GitAPIException;
-import org.gradle.internal.impldep.org.eclipse.jgit.lib.Repository;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
@@ -15,12 +14,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Arrays;
-import java.util.HashSet;
 
 public class GradleBasePlugin implements Plugin<Project> {
 
@@ -65,7 +64,7 @@ public class GradleBasePlugin implements Plugin<Project> {
             project.setProperty("targetCompatibility", "1.8");
 
             //project.getDependencies().add("compile", "com.github.techscode:baseplugin:"+meta.baseVersion);
-            project.getDependencies().add("compile", "files(\"/libs/BasePlugin.jar\")");
+            project.getDependencies().add("implementation", "files(\"libs/BasePlugin.jar\")");
         });
 
         project.getRepositories().jcenter();
@@ -74,8 +73,7 @@ public class GradleBasePlugin implements Plugin<Project> {
 
         String[] userRepositories = new String[]{
                 "https://hub.spigotmc.org/nexus/content/repositories/snapshots/",
-                "https://oss.sonatype.org/content/repositories/sna112345 89Ü+>YXC VB´" +
-                        "pshots",
+                "https://oss.sonatype.org/content/repositories/snapshots",
                 "https://jitpack.io"
         };
 
@@ -113,11 +111,15 @@ public class GradleBasePlugin implements Plugin<Project> {
         String token = System.getenv("GITHUB_TOKEN");
 
         String RETRIEVE_RELEASES = "https://api.github.com/repos/techscode/baseplugin/releases/tags/"+version+"?access_token="+token;
-        System.out.println(RETRIEVE_RELEASES);
-        String download = "https://api.github.com/repos/TechsCode/BasePlugin/releases/assets/18869444";
 
         try {
-            URL url = new URL(download);
+            JSONParser parser = new JSONParser();
+            String json = IOUtils.toString(new URI(RETRIEVE_RELEASES), "UTF-8");
+            JSONObject root = (JSONObject) parser.parse(json);
+            JSONArray assets = (JSONArray) root.get("assets");
+            JSONObject asset = (JSONObject) assets.get(0);
+
+            URL url = new URL((String) asset.get("url"));
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestProperty("Accept", "application/octet-stream");
             connection.setRequestProperty("Authorization", "token "+token);
@@ -128,9 +130,10 @@ public class GradleBasePlugin implements Plugin<Project> {
             uChannel.close();
             foStream.close();
             fChannel.close();
-        } catch (IOException e) {
+        } catch (ParseException | URISyntaxException | IOException e) {
             e.printStackTrace();
         }
+
     }
 
     public void createGitIgnore(File file){

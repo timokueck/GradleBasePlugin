@@ -21,6 +21,8 @@ buildscript {
 dependencies {
     compile gradleApi()
 
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile "com.googlecode.json-simple:json-simple:1.1.1"
     runtime "com.github.jengelman.gradle.plugins:shadow:5.2.0"
 }
 
