@@ -13,12 +13,13 @@ public class GenerateMetaFilesTask extends DefaultTask {
         System.out.println(Color.GREEN_BRIGHT+"Generating Plugin.yml & Bungee.yml");
 
         File build = getProject().getBuildDir();
-        File pluginYml = new File(build.getAbsolutePath()+"/resources/plugin.yml");
-        File bungeeYml = new File(build.getAbsolutePath()+"/resources/bungee.yml");
+        File resourcesFolder = new File(build.getAbsolutePath()+"/resources");
+        resourcesFolder.mkdirs();
+
+        File pluginYml = new File(resourcesFolder.getAbsolutePath()+"/plugin.yml");
+        File bungeeYml = new File(resourcesFolder.getAbsolutePath()+"/bungee.yml");
 
         try {
-            pluginYml.mkdirs();
-            bungeeYml.mkdirs();
             pluginYml.createNewFile();
             bungeeYml.createNewFile();
 
