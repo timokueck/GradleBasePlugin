@@ -32,6 +32,8 @@ public class GradleBasePlugin implements Plugin<Project> {
         project.getTasks().create("dev", DevTask.class);
 
         project.getPlugins().apply("com.github.johnrengelman.shadow");
+
+        project.getTasksByName("build", false).stream().findFirst().get().dependsOn("generateMetaFiles");
         project.getTasksByName("build", false).stream().findFirst().get().dependsOn("shadowJar");
 
         project.afterEvaluate((p) -> {

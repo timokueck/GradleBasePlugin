@@ -2,10 +2,11 @@ package me.TechsCode;
 
 import java.util.Random;
 
-public class MetaExtension implements ValidatableExtension {
+public class MetaExtension {
 
     public String version;
     public String baseVersion;
+    public String loadAfter, loadBefore, load;
 
     public boolean validate() {
         if(version == null){

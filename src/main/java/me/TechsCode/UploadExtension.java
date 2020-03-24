@@ -3,7 +3,7 @@ package me.TechsCode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadExtension implements ValidatableExtension {
+public class UploadExtension {
 
     public String host, username, password, path;
 
