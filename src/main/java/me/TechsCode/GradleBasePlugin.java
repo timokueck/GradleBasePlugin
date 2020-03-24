@@ -30,6 +30,7 @@ public class GradleBasePlugin implements Plugin<Project> {
 
         project.getTasks().create("upload", UploadTask.class);
         project.getTasks().create("dev", DevTask.class);
+        project.getTasks().create("generateMetaFiles", GenerateMetaFiles.class);
 
         project.getPlugins().apply("com.github.johnrengelman.shadow");
 
