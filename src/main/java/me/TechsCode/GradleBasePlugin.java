@@ -56,7 +56,7 @@ public class GradleBasePlugin implements Plugin<Project> {
             log("Plugin: "+project.getName()+" on Version: "+meta.version);
             log();
 
-            downloadBasePlugin(new File("libs/BasePlugin.jar"), meta.baseVersion);
+            downloadBasePlugin(new File("libs"), meta.baseVersion);
 
             project.setProperty("version", meta.version);
             project.setProperty("sourceCompatibility", "1.8");
@@ -105,13 +105,8 @@ public class GradleBasePlugin implements Plugin<Project> {
         System.out.println();
     }
 
-    public void downloadBasePlugin(File outputFile, String version){
-        outputFile.delete();
-        try {
-            outputFile.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void downloadBasePlugin(File directory, String version){
+        directory.mkdirs();
 
         String token = System.getenv("GITHUB_TOKEN");
 
@@ -124,7 +119,7 @@ public class GradleBasePlugin implements Plugin<Project> {
             connection.setRequestProperty("Accept", "application/octet-stream");
             connection.setRequestProperty("Authorization", "token "+token);
             ReadableByteChannel uChannel = Channels.newChannel(connection.getInputStream());
-            FileOutputStream foStream = new FileOutputStream(outputFile.getAbsolutePath());
+            FileOutputStream foStream = new FileOutputStream(directory.getAbsolutePath()+"/BasePlugin.jar");
             FileChannel fChannel = foStream.getChannel();
             fChannel.transferFrom(uChannel, 0, Long.MAX_VALUE);
             uChannel.close();
