@@ -63,8 +63,7 @@ public class GradleBasePlugin implements Plugin<Project> {
             project.setProperty("sourceCompatibility", "1.8");
             project.setProperty("targetCompatibility", "1.8");
 
-            //project.getDependencies().add("compile", "com.github.techscode:baseplugin:"+meta.baseVersion);
-            project.getDependencies().add("implementation", "files(\"libs/BasePlugin.jar\")");
+            project.getDependencies().add("implementation", project.files("libs/BasePlugin.jar"));
         });
 
         project.getRepositories().jcenter();
