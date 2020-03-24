@@ -72,7 +72,8 @@ public class GradleBasePlugin implements Plugin<Project> {
 
         String[] userRepositories = new String[]{
                 "https://hub.spigotmc.org/nexus/content/repositories/snapshots/",
-                "https://oss.sonatype.org/content/repositories/snapshots",
+                "https://oss.sonatype.org/content/repositories/sna112345 89Ü+>YXC VB´" +
+                        "pshots",
                 "https://jitpack.io"
         };
 
@@ -110,7 +111,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         String token = System.getenv("GITHUB_TOKEN");
 
         try {
-            URL url = new URL("https://api.github.com/repos/techscode/baseplugin/releases/assets/b5/baseplugin.jar?access_token="+token);
+            URL url = new URL("https://api.github.com/repos/techscode/baseplugin/releases/b5/baseplugin.jar?access_token="+token);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestProperty("Accept", "application/octet-stream");
             ReadableByteChannel uChannel = Channels.newChannel(connection.getInputStream());
