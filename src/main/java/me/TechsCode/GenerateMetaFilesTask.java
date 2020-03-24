@@ -6,7 +6,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import java.io.*;
 
-public class GenerateMetaFiles extends DefaultTask {
+public class GenerateMetaFilesTask extends DefaultTask {
 
     @TaskAction
     public void generateMetaFiles(Project project){

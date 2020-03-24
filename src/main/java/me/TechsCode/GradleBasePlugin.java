@@ -19,7 +19,6 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.util.Arrays;
 
 public class GradleBasePlugin implements Plugin<Project> {
 
@@ -30,7 +29,7 @@ public class GradleBasePlugin implements Plugin<Project> {
 
         project.getTasks().create("upload", UploadTask.class);
         project.getTasks().create("dev", DevTask.class);
-        project.getTasks().create("generateMetaFiles", GenerateMetaFiles.class);
+        project.getTasks().create("generateMetaFiles", GenerateMetaFilesTask.class);
 
         project.getPlugins().apply("com.github.johnrengelman.shadow");
 
