@@ -1,5 +1,9 @@
 package me.TechsCode;
 
+import com.github.jengelman.gradle.plugins.shadow.ShadowExtension;
+import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin;
+import com.github.jengelman.gradle.plugins.shadow.ShadowPlugin;
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar;
 import org.apache.commons.io.IOUtils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -31,7 +35,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         project.getTasks().create("dev", DevTask.class);
         project.getTasks().create("generateMetaFiles", GenerateMetaFilesTask.class);
 
-        project.getPlugins().apply("com.github.johnrengelman.shadow");
+        Plugin shadow = project.getPlugins().apply("com.github.johnrengelman.shadow");
 
         project.getTasksByName("build", false).stream().findFirst().get().dependsOn("shadowJar");
         project.getTasksByName("shadowJar", false).stream().findFirst().get().dependsOn("generateMetaFiles");
@@ -102,6 +106,10 @@ public class GradleBasePlugin implements Plugin<Project> {
             for(String dependency : compileOnlyDependencies){
                 project.getDependencies().add("compileOnly", dependency);
             }
+
+            ShadowJar shadowTask = (ShadowJar) project.getTasksByName("shadowJar", false).stream().findFirst().get();
+            shadowTask.relocate("me.TechsCode.base", "me.TechsCode."+project.getName()+".base");
+            shadowTask.relocate("me.TechsCode.tpl", "me.TechsCode."+project.getName()+".tpl");
         });
     }
 
