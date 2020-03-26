@@ -87,6 +87,7 @@ public class GradleBasePlugin implements Plugin<Project> {
 
         // Retrieving ShadeTask for Relocation
         ShadowJar shadowTask = (ShadowJar) project.getTasksByName("shadowJar", false).stream().findFirst().get();
+        shadowTask.getArchiveFileName().set(project.getName()+".jar");
 
         // Adding Common Repositories for Spigpt & Bungee + more
         Arrays.stream(repositories)
