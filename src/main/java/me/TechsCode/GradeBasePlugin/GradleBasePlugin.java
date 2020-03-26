@@ -47,6 +47,8 @@ public class GradleBasePlugin implements Plugin<Project> {
         // Registering Tasks
         project.getTasks().create("generateMetaFiles", GenerateMetaFilesTask.class);
 
+        System.out.println(deploymentFile.getLocalOutputPath());
+
         // Setting
         ShadowJar shadowTask = (ShadowJar) project.getTasks().getByName("shadowJar");
         shadowTask.getArchiveFileName().set(project.getName()+".jar");
@@ -55,7 +57,7 @@ public class GradleBasePlugin implements Plugin<Project> {
 
         project.getTasks().getByName("build").dependsOn("shadowJar");
 
-        project.getTasks().getByName("build").doLast(this::onBuildCompletion);
+        //project.getTasks().getByName("build").doLast(this::onBuildCompletion);
 
         githubToken = System.getenv("GITHUB_TOKEN");
 
