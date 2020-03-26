@@ -71,18 +71,5 @@ public class ResourceManager {
         }
     }
 
-    public static File getDeploymentFile(){
-        File file = new File("deployment.json");
 
-        if(!file.exists()){
-            try {
-                InputStream src = ResourceManager.class.getResourceAsStream("/deployment.json");
-                Files.copy(src, Paths.get(file.toURI()), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return file;
-    }
 }

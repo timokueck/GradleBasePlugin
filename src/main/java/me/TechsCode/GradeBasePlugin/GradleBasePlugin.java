@@ -2,18 +2,13 @@ package me.TechsCode.GradeBasePlugin;
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar;
 import me.TechsCode.GradeBasePlugin.extensions.MetaExtension;
-import me.TechsCode.GradeBasePlugin.tasks.DevTask;
 import me.TechsCode.GradeBasePlugin.tasks.GenerateMetaFilesTask;
-import me.TechsCode.GradeBasePlugin.tasks.UploadTask;
-import org.apache.commons.io.FileUtils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Optional;
 
 public class GradleBasePlugin implements Plugin<Project> {
 
@@ -36,6 +31,7 @@ public class GradleBasePlugin implements Plugin<Project> {
     };
 
     private MetaExtension meta;
+    private DeploymentFile deploymentFile;
 
     private String githubToken;
 
@@ -43,24 +39,25 @@ public class GradleBasePlugin implements Plugin<Project> {
     public void apply(Project project) {
         this.meta = project.getExtensions().create("meta", MetaExtension.class);
 
+        ResourceManager.createGitIgnore();
+        deploymentFile = new DeploymentFile();
+
         project.getPlugins().apply("com.github.johnrengelman.shadow");
 
         // Registering Tasks
-        project.getTasks().create("upload", UploadTask.class);
-        project.getTasks().create("dev", DevTask.class);
         project.getTasks().create("generateMetaFiles", GenerateMetaFilesTask.class);
 
         // Setting
         ShadowJar shadowTask = (ShadowJar) project.getTasks().getByName("shadowJar");
         shadowTask.getArchiveFileName().set(project.getName()+".jar");
-
+        shadowTask.setProperty("destinationDir", deploymentFile.getLocalOutputPath());
         shadowTask.dependsOn("generateMetaFiles");
+
         project.getTasks().getByName("build").dependsOn("shadowJar");
 
-        githubToken = System.getenv("GITHUB_TOKEN");
+        project.getTasks().getByName("build").doLast(this::onBuildCompletion);
 
-        ResourceManager.createGitIgnore();
-        File deploymentFile = ResourceManager.getDeploymentFile();
+        githubToken = System.getenv("GITHUB_TOKEN");
 
         project.afterEvaluate(this::onProjectEvaluation);
     }
@@ -107,6 +104,14 @@ public class GradleBasePlugin implements Plugin<Project> {
         Arrays.stream(relocations)
                 .map(entry -> entry.split("#"))
                 .forEach(fromTo -> shadowTask.relocate(fromTo[0], fromTo[1].replace("PROJECT_NAME", project.getName())));
+    }
+
+    public void onBuildCompletion(Task buildTask){
+        File file = new File(deploymentFile.getLocalOutputPath()+"/"+buildTask.getProject().getName()+".jar");
+
+        for(DeploymentFile.Remote all : deploymentFile.getRemotes()){
+            all.uploadFile(file);
+        }
     }
 
     public static void log(String message){
