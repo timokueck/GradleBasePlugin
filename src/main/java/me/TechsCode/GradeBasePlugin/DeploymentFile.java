@@ -7,9 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -78,16 +76,20 @@ public class DeploymentFile {
             if(!enabled) return;
 
             try {
+                java.util.Properties config = new java.util.Properties();
+                config.put("StrictHostKeyChecking", "no");
+
                 JSch jsch = new JSch();
-                jsch.setConfig("StrictHostKeyChecking", "no");
-                Session jschSession = jsch.getSession(username, hostname);
-                jschSession.setPassword(password);
-                jschSession.connect();
-                ChannelSftp sftp = (ChannelSftp) jschSession.openChannel("sftp");
-                sftp.put(file.getAbsolutePath(), path+"/"+file.getName());
+                Session session = jsch.getSession(username, hostname, 22);
+                session.setPassword(password);
+                session.setConfig(config);
+                session.connect();
+                ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
+                sftp.cd(path);
+                sftp.put(new FileInputStream(file), file.getName(), ChannelSftp.OVERWRITE);
                 sftp.exit();
-                jschSession.disconnect();
-            } catch (JSchException | SftpException e) {
+                session.disconnect();
+            } catch (JSchException | SftpException | FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
