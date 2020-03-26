@@ -31,35 +31,32 @@ public class GradleBasePlugin implements Plugin<Project> {
     };
 
     private MetaExtension meta;
-    private DeploymentFile deploymentFile;
-
     private String githubToken;
+    private DeploymentFile deploymentFile;
 
     @Override
     public void apply(Project project) {
         this.meta = project.getExtensions().create("meta", MetaExtension.class);
+        this.githubToken = System.getenv("GITHUB_TOKEN");
+        this.deploymentFile = new DeploymentFile();
 
         ResourceManager.createGitIgnore();
-        deploymentFile = new DeploymentFile();
 
         project.getPlugins().apply("com.github.johnrengelman.shadow");
 
         // Registering Tasks
         project.getTasks().create("generateMetaFiles", GenerateMetaFilesTask.class);
 
-        System.out.println(deploymentFile.getLocalOutputPath());
-
         // Setting
         ShadowJar shadowTask = (ShadowJar) project.getTasks().getByName("shadowJar");
         shadowTask.getArchiveFileName().set(project.getName()+".jar");
-        shadowTask.setProperty("destinationDir", deploymentFile.getLocalOutputPath());
+        shadowTask.setProperty("destinationDir", project.file(deploymentFile.getLocalOutputPath()));
         shadowTask.dependsOn("generateMetaFiles");
 
         project.getTasks().getByName("build").dependsOn("shadowJar");
 
-        //project.getTasks().getByName("build").doLast(this::onBuildCompletion);
+        project.getTasks().getByName("build").doLast(this::onBuildCompletion);
 
-        githubToken = System.getenv("GITHUB_TOKEN");
 
         project.afterEvaluate(this::onProjectEvaluation);
     }
