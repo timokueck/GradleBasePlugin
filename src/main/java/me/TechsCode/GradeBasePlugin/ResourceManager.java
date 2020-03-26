@@ -1,5 +1,6 @@
 package me.TechsCode.GradeBasePlugin;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,6 +27,9 @@ public class ResourceManager {
         File libraryFolder = new File("libs");
         libraryFolder.mkdirs();
 
+        File libraryFile = new File(libraryFolder.getAbsolutePath()+"/BasePlugin.jar");
+        libraryFile.delete();
+
         String RETRIEVE_RELEASES = "https://api.github.com/repos/techscode/baseplugin/releases/tags/"+version+"?access_token="+githubToken;
 
         try {
@@ -41,7 +45,7 @@ public class ResourceManager {
             connection.setRequestProperty("Authorization", "token "+githubToken);
 
             ReadableByteChannel uChannel = Channels.newChannel(connection.getInputStream());
-            FileOutputStream foStream = new FileOutputStream(libraryFolder.getAbsolutePath()+"/BasePlugin.jar");
+            FileOutputStream foStream = new FileOutputStream(libraryFile.getAbsolutePath());
             FileChannel fChannel = foStream.getChannel();
             fChannel.transferFrom(uChannel, 0, Long.MAX_VALUE);
             uChannel.close();
@@ -56,31 +60,24 @@ public class ResourceManager {
     }
 
     public static void createGitIgnore(){
-        File file = new File(".gitignore");
-
         try {
-            file.delete();
-            file.createNewFile();
-
-            String[] lines = new String[]{
-                    "*.DS_Store",
-                    "*.iml",
-                    ".idea/",
-                    ".gradle/",
-                    "out/",
-                    "build/",
-                    "libs/"
-            };
-
-            PrintWriter writer = new PrintWriter(file, "UTF-8");
-
-            for(String line : lines){
-                writer.println(line);
-            }
-
-            writer.close();
+            FileUtils.copyURLToFile(ResourceManager.class.getResource(".gitignore"),  new File(".gitignore"));
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static File getDeploymentFile(){
+        File file = new File("deployment.json");
+
+        if(!file.exists()){
+            try {
+                FileUtils.copyURLToFile(ResourceManager.class.getResource("deployment.json"), file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return file;
     }
 }

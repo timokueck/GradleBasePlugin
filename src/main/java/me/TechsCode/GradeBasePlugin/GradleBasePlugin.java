@@ -2,13 +2,16 @@ package me.TechsCode.GradeBasePlugin;
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar;
 import me.TechsCode.GradeBasePlugin.extensions.MetaExtension;
-import me.TechsCode.GradeBasePlugin.extensions.UploadExtension;
 import me.TechsCode.GradeBasePlugin.tasks.DevTask;
 import me.TechsCode.GradeBasePlugin.tasks.GenerateMetaFilesTask;
 import me.TechsCode.GradeBasePlugin.tasks.UploadTask;
+import org.apache.commons.io.FileUtils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -33,32 +36,37 @@ public class GradleBasePlugin implements Plugin<Project> {
     };
 
     private MetaExtension meta;
-    private UploadExtension upload;
 
-    private Optional<String> githubToken;
+    private String githubToken;
 
     @Override
     public void apply(Project project) {
         this.meta = project.getExtensions().create("meta", MetaExtension.class);
-        this.upload = project.getExtensions().create("upload", UploadExtension.class);
 
+        project.getPlugins().apply("com.github.johnrengelman.shadow");
+
+        // Registering Tasks
         project.getTasks().create("upload", UploadTask.class);
         project.getTasks().create("dev", DevTask.class);
         project.getTasks().create("generateMetaFiles", GenerateMetaFilesTask.class);
 
-        project.getPlugins().apply("com.github.johnrengelman.shadow");
+        // Setting
+        ShadowJar shadowTask = (ShadowJar) project.getTasks().getByName("shadowJar");
+        shadowTask.getArchiveFileName().set(project.getName()+".jar");
 
+        shadowTask.dependsOn("generateMetaFiles");
         project.getTasks().getByName("build").dependsOn("shadowJar");
-        project.getTasks().getByName("shadowJar").dependsOn("generateMetaFiles");
 
-        githubToken = Optional.ofNullable(System.getenv("GITHUB_TOKEN"));
+        githubToken = System.getenv("GITHUB_TOKEN");
+
+        ResourceManager.createGitIgnore();
+        File deploymentFile = ResourceManager.getDeploymentFile();
 
         project.afterEvaluate(this::onProjectEvaluation);
     }
 
     public void onProjectEvaluation(Project project){
         if(meta.validate()) return;
-        if(upload.validate()) return;
 
         log(Color.GREEN_BOLD_BRIGHT+"Configuring Gradle Project - Build Settings...");
         log();
@@ -73,21 +81,18 @@ public class GradleBasePlugin implements Plugin<Project> {
         project.getRepositories().mavenLocal();
         project.getRepositories().mavenCentral();
 
-        if(ResourceManager.loadBasePlugin(githubToken.get(), meta.baseVersion)){
+        if(ResourceManager.loadBasePlugin(githubToken, meta.baseVersion)){
             log("Successfully retrieved BasePlugin.jar from Github...");
         } else {
             log(Color.RED+"Could not retrieve BasePlugin.jar from Github... Using older build if available");
             log(Color.RED+"Make sure that you have set the GITHUB_TOKEN environment variable that has access to the BasePlugin repository");
         }
 
-        ResourceManager.createGitIgnore();
-
         // Adding BasePlugin Dependency
         project.getDependencies().add("implementation", project.files("libs/BasePlugin.jar"));
 
         // Retrieving ShadeTask for Relocation
-        ShadowJar shadowTask = (ShadowJar) project.getTasksByName("shadowJar", false).stream().findFirst().get();
-        shadowTask.getArchiveFileName().set(project.getName()+".jar");
+        ShadowJar shadowTask = (ShadowJar) project.getTasks().getByName("shadowJar");
 
         // Adding Common Repositories for Spigpt & Bungee + more
         Arrays.stream(repositories)
