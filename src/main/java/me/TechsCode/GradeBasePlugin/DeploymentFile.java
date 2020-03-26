@@ -85,6 +85,7 @@ public class DeploymentFile {
                 session.setConfig(config);
                 session.connect();
                 ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
+                sftp.connect();
                 sftp.cd(path);
                 sftp.put(new FileInputStream(file), file.getName(), ChannelSftp.OVERWRITE);
                 sftp.exit();
