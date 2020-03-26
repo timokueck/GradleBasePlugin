@@ -11,12 +11,16 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class ResourceManager {
 
@@ -60,7 +64,8 @@ public class ResourceManager {
 
     public static void createGitIgnore(){
         try {
-            FileUtils.copyURLToFile(ResourceManager.class.getResource("gitignore.file"),  new File(".gitignore"));
+            InputStream src = ResourceManager.class.getResourceAsStream("/gitignore.file");
+            Files.copy(src, Paths.get(new File(".gitignore").toURI()), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,7 +76,8 @@ public class ResourceManager {
 
         if(!file.exists()){
             try {
-                FileUtils.copyURLToFile(ResourceManager.class.getResource("deployment.json"), file);
+                InputStream src = ResourceManager.class.getResourceAsStream("/deployment.json");
+                Files.copy(src, Paths.get(file.toURI()), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 e.printStackTrace();
             }
