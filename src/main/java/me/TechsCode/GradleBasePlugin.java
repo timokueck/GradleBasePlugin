@@ -23,94 +23,106 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.util.Arrays;
 
 public class GradleBasePlugin implements Plugin<Project> {
 
+    private static final String[] repositories = new String[]{
+            "https://hub.spigotmc.org/nexus/content/repositories/snapshots/",
+            "https://oss.sonatype.org/content/repositories/snapshots",
+            "https://jitpack.io"
+    };
+
+    private static final String[] dependencies = new String[]{
+            "compileOnly#org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT",
+            "compileOnly#org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT",
+            "compileOnly#net.md-5:bungeecord-api:1.12-SNAPSHOT"
+    };
+
+    private static final String[] relocations = new String[]{
+            "me.TechsCode.base#me.TechsCode.PROJECT_NAME.base",
+            "me.TechsCode.tpl#me.TechsCode.PROJECT_NAME.tpl",
+            "me.TechsCode.dependencies#me.TechsCode.PROJECT_NAME.dependencies"
+    };
+
+    private MetaExtension meta;
+    private UploadExtension upload;
+
     @Override
     public void apply(Project project) {
-        project.getExtensions().create("meta", MetaExtension.class);
-        project.getExtensions().create("upload", UploadExtension.class);
+        this.meta = project.getExtensions().create("meta", MetaExtension.class);
+        this.upload = project.getExtensions().create("upload", UploadExtension.class);
 
         project.getTasks().create("upload", UploadTask.class);
         project.getTasks().create("dev", DevTask.class);
         project.getTasks().create("generateMetaFiles", GenerateMetaFilesTask.class);
 
-        Plugin shadow = project.getPlugins().apply("com.github.johnrengelman.shadow");
+        project.getPlugins().apply("com.github.johnrengelman.shadow");
 
-        project.getTasksByName("build", false).stream().findFirst().get().dependsOn("shadowJar");
-        project.getTasksByName("shadowJar", false).stream().findFirst().get().dependsOn("generateMetaFiles");
+        project.getTasks().getByName("build").dependsOn("shadowJar");
+        project.getTasks().getByName("shadowJar").dependsOn("generateMetaFiles");
 
-        project.afterEvaluate((p) -> {
-            MetaExtension meta = project.getExtensions().getByType(MetaExtension.class);
-            UploadExtension upload = project.getExtensions().getByType(UploadExtension.class);
+        project.afterEvaluate(this::onProjectEvaluation);
+    }
 
-            if(meta.validate()){
-                log();
-                log(Color.RED+"Please check the GitHub page of GradleBasePlugin for more information");
+    public void onProjectEvaluation(Project project){
+        log(Color.GREEN_BOLD_BRIGHT+"Configuring Gradle Project - Build Settings...");
+
+        if(meta.validate()){
+            log();
+            log(Color.RED+"Please check the GitHub page of GradleBasePlugin for more information");
+            return;
+        }
+
+        if(upload.validate()){
+            log();
+            log(Color.RED+"Please check your SFTP Upload Settings and retry.");
+            return;
+        }
+
+        log();
+        log("Project Info:");
+        log("Plugin: "+project.getName()+" on Version: "+meta.version);
+        log();
+
+        if(System.getenv("GITHUB_TOKEN") != null){
+            log("Loading BasePlugin.jar from Github...");
+
+            try {
+                downloadBasePlugin(new File("libs"), meta.baseVersion);
+
+                log("Done!");
+            } catch (ParseException | URISyntaxException | IOException e) {
+                log("Could not load BasePlugin from Github: "+e.getMessage());
                 return;
             }
+        }
 
-            if(upload.validate()){
-                log();
-                log(Color.RED+"Please check your SFTP Upload Settings and retry.");
-                return;
-            }
+        createGitIgnore(new File(".gitignore"));
 
-            log(Color.GREEN_BOLD_BRIGHT+"Configuring Gradle Project - Build Settings...");
-            log();
-            log("Project Info:");
-            log("Plugin: "+project.getName()+" on Version: "+meta.version);
-            log();
+        project.getRepositories().jcenter();
+        project.getRepositories().mavenLocal();
+        project.getRepositories().mavenCentral();
+        project.setProperty("version", meta.version);
+        project.setProperty("sourceCompatibility", "1.8");
+        project.setProperty("targetCompatibility", "1.8");
 
-            if(System.getenv("GITHUB_TOKEN") != null){
-                log("Loading BasePlugin.jar from Github...");
+        // Adding BasePlugin Dependency
+        project.getDependencies().add("implementation", project.files("libs/BasePlugin.jar"));
 
-                try {
-                    downloadBasePlugin(new File("libs"), meta.baseVersion);
+        // Retrieving ShadeTask for Relocation
+        ShadowJar shadowTask = (ShadowJar) project.getTasksByName("shadowJar", false).stream().findFirst().get();
 
-                    log("Done!");
-                } catch (ParseException | URISyntaxException | IOException e) {
-                    log("Could not load BasePlugin from Github: "+e.getMessage());
-                    return;
-                }
-            }
+        Arrays.stream(repositories)
+                .forEach(url -> project.getRepositories().maven((maven) -> maven.setUrl(url)));
 
-            createGitIgnore(new File(".gitignore"));
+        Arrays.stream(dependencies)
+                .map(entry -> entry.split("#"))
+                .forEach(confAndUrl -> project.getDependencies().add(confAndUrl[0], confAndUrl[1]));
 
-            project.setProperty("version", meta.version);
-            project.setProperty("sourceCompatibility", "1.8");
-            project.setProperty("targetCompatibility", "1.8");
-
-            project.getDependencies().add("implementation", project.files("libs/BasePlugin.jar"));
-
-            project.getRepositories().jcenter();
-            project.getRepositories().mavenLocal();
-            project.getRepositories().mavenCentral();
-
-            String[] userRepositories = new String[]{
-                    "https://hub.spigotmc.org/nexus/content/repositories/snapshots/",
-                    "https://oss.sonatype.org/content/repositories/snapshots",
-                    "https://jitpack.io"
-            };
-
-            String[] compileOnlyDependencies = new String[]{
-                    "org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT",
-                    "org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT",
-                    "net.md-5:bungeecord-api:1.12-SNAPSHOT"
-            };
-
-            for(String repository : userRepositories){
-                project.getRepositories().maven((maven) -> maven.setUrl(repository));
-            }
-
-            for(String dependency : compileOnlyDependencies){
-                project.getDependencies().add("compileOnly", dependency);
-            }
-
-            ShadowJar shadowTask = (ShadowJar) project.getTasksByName("shadowJar", false).stream().findFirst().get();
-            shadowTask.relocate("me.TechsCode.base", "me.TechsCode."+project.getName()+".base");
-            shadowTask.relocate("me.TechsCode.tpl", "me.TechsCode."+project.getName()+".tpl");
-        });
+        Arrays.stream(relocations)
+                .map(entry -> entry.split("#"))
+                .forEach(fromTo -> shadowTask.relocate(fromTo[0], fromTo[1].replace("PROJECT_NAME", project.getName())));
     }
 
     public static void log(String message){
