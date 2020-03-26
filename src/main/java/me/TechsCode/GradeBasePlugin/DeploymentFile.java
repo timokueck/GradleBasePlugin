@@ -79,6 +79,7 @@ public class DeploymentFile {
 
             try {
                 JSch jsch = new JSch();
+                jsch.setConfig("StrictHostKeyChecking", "no");
                 Session jschSession = jsch.getSession(username, hostname);
                 jschSession.setPassword(password);
                 jschSession.connect();
