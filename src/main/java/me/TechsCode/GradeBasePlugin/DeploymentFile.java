@@ -1,9 +1,7 @@
 package me.TechsCode.GradeBasePlugin;
 
+import com.jcraft.jsch.*;
 import org.apache.commons.io.FileUtils;
-import org.gradle.api.internal.provider.Collectors;
-import org.gradle.internal.impldep.com.google.gson.JsonElement;
-import org.gradle.internal.impldep.com.jcraft.jsch.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

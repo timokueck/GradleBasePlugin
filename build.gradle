@@ -28,6 +28,7 @@ dependencies {
     compile "com.github.jengelman.gradle.plugins:shadow:5.2.0"
 
     compile "com.googlecode.json-simple:json-simple:1.1.1"
+    compile 'com.jcraft:jsch:0.1.55'
 }
 
 repositories {

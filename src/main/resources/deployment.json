@@ -2,7 +2,7 @@
   "local": {
     "path": "build"
   },
-  "remote": [
+  "remotes": [
     {
       "enabled": false,
       "hostname": "domain.com",
