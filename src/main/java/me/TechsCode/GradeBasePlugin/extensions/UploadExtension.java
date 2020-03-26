@@ -1,7 +1,6 @@
-package me.TechsCode;
+package me.TechsCode.GradeBasePlugin.extensions;
 
-import java.util.ArrayList;
-import java.util.List;
+import me.TechsCode.GradeBasePlugin.GradleBasePlugin;
 
 public class UploadExtension {
 

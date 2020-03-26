@@ -1,4 +1,4 @@
-package me.TechsCode;
+package me.TechsCode.GradeBasePlugin.tasks;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;

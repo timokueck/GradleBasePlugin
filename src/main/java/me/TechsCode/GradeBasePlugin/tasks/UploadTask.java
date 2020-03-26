@@ -1,5 +1,7 @@
-package me.TechsCode;
+package me.TechsCode.GradeBasePlugin.tasks;
 
+import me.TechsCode.GradeBasePlugin.GradleBasePlugin;
+import me.TechsCode.GradeBasePlugin.extensions.UploadExtension;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 

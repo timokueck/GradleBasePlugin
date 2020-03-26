@@ -1,4 +1,7 @@
-package me.TechsCode;
+package me.TechsCode.GradeBasePlugin.extensions;
+
+import me.TechsCode.GradeBasePlugin.Color;
+import me.TechsCode.GradeBasePlugin.GradleBasePlugin;
 
 import java.util.Random;
 
@@ -11,11 +14,15 @@ public class MetaExtension {
     public boolean validate() {
         if(version == null){
             GradleBasePlugin.log("Could not find a 'meta' section with a 'version' field in your build.gradle");
+            GradleBasePlugin.log();
+            GradleBasePlugin.log(Color.RED+"Please check the GitHub page of GradleBasePlugin for more information");
             return true;
         }
 
         if(baseVersion == null){
             GradleBasePlugin.log("Could not find a 'baseVersion' field in your build.gradle. Typically this is something like 'b"+new Random().nextInt(200) +"'");
+            GradleBasePlugin.log();
+            GradleBasePlugin.log(Color.RED+"Please check the GitHub page of GradleBasePlugin for more information");
             return true;
         }
 
