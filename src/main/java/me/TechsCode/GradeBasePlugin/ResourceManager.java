@@ -11,7 +11,6 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -61,7 +60,7 @@ public class ResourceManager {
 
     public static void createGitIgnore(){
         try {
-            FileUtils.copyURLToFile(ResourceManager.class.getResource(".gitignore"),  new File(".gitignore"));
+            FileUtils.copyURLToFile(ResourceManager.class.getResource("gitignore.file"),  new File(".gitignore"));
         } catch (IOException e) {
             e.printStackTrace();
         }
