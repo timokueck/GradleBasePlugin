@@ -63,12 +63,12 @@ public class DeploymentFile {
 
         private boolean enabled;
         private String hostname, username, password, path;
-        private int port;
+        private long port;
 
         public Remote(JSONObject jsonObject) {
             this.enabled = (boolean) jsonObject.get("enabled");
             this.hostname = (String) jsonObject.get("hostname");
-            this.port = jsonObject.containsKey("port") ? (int) jsonObject.get("port") : 22;
+            this.port = jsonObject.containsKey("port") ? (long) jsonObject.get("port") : 22;
             this.username = (String) jsonObject.get("username");
             this.password = (String) jsonObject.get("password");
             this.path = (String) jsonObject.get("path");
@@ -82,7 +82,7 @@ public class DeploymentFile {
                 config.put("StrictHostKeyChecking", "no");
 
                 JSch jsch = new JSch();
-                Session session = jsch.getSession(username, hostname, port);
+                Session session = jsch.getSession(username, hostname, Math.round(port));
                 session.setPassword(password);
                 session.setConfig(config);
                 session.connect();
