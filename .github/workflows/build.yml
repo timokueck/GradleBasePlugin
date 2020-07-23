@@ -7,7 +7,6 @@ on:
     branches: [ master ]
 
 env:
-  buildNumber: build-${{ github.run_number }}
   path: build/libs/GradleBasePlugin.jar
   name: GradleBasePlugin.jar
 
@@ -37,7 +36,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ env.buildNumber }}
+        tag_name: build-${{ github.run_number }}
         release_name: ${{ env.name }} Release
     
     - name: Upload Release Asset
