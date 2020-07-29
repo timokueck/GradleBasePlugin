@@ -2,11 +2,19 @@
   "local": {
     "path": "build"
   },
+  "releaseRemote": {
+    "enabled": false,
+    "hostname": "domain.com",
+    "port": 22,
+    "username": "root",
+    "password": "password",
+    "path": "/srv"
+  },
   "remotes": [
     {
       "enabled": false,
       "hostname": "domain.com",
-      "port": 22
+      "port": 22,
       "username": "root",
       "password": "password",
       "path": "/srv"

@@ -2,6 +2,7 @@ package me.TechsCode.GradeBasePlugin;
 
 import com.jcraft.jsch.*;
 import org.apache.commons.io.FileUtils;
+import org.gradle.internal.impldep.com.google.gson.JsonObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -14,13 +15,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 public class DeploymentFile {
 
-    private JSONObject root;
+    private static JSONObject root;
 
-    public DeploymentFile() {
+    static  {
         File file = new File("deployment.json");
 
         if(!file.exists()){
@@ -42,12 +44,12 @@ public class DeploymentFile {
         }
     }
 
-    public String getLocalOutputPath(){
+    public static String getLocalOutputPath(){
         JSONObject local = (JSONObject) root.get("local");
         return (String) local.get("path");
     }
 
-    public List<Remote> getRemotes(){
+    public static List<Remote> getRemotes(){
         List<Remote> remotes = new ArrayList<>();
 
         for(Object object : (JSONArray) root.get("remotes")){
@@ -59,7 +61,11 @@ public class DeploymentFile {
         return remotes;
     }
 
-    public class Remote {
+    public static Optional<Remote> getReleaseRemote(){
+        return root.containsKey("releaseRemote") ? Optional.of(new Remote((JSONObject) root.get("releaseRemote"))) : Optional.empty();
+    }
+
+    public static class Remote {
 
         private boolean enabled;
         private String hostname, username, password, path;
@@ -75,8 +81,6 @@ public class DeploymentFile {
         }
 
         public void uploadFile(File file){
-            if(!enabled) return;
-
             try {
                 java.util.Properties config = new java.util.Properties();
                 config.put("StrictHostKeyChecking", "no");
@@ -93,8 +97,15 @@ public class DeploymentFile {
                 sftp.exit();
                 session.disconnect();
             } catch (JSchException | SftpException | FileNotFoundException e) {
-                e.printStackTrace();
+                GradleBasePlugin.log("§7Couldnt upload file to remote '"+hostname+"':");
+                GradleBasePlugin.log(e.getMessage());
             }
         }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+
     }
 }
