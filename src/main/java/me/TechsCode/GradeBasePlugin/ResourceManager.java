@@ -2,6 +2,7 @@ package me.TechsCode.GradeBasePlugin;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.gradle.api.Project;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,10 +25,10 @@ import java.nio.file.StandardCopyOption;
 
 public class ResourceManager {
 
-    public static boolean loadBasePlugin(String githubToken, String version){
+    public static boolean loadBasePlugin(Project project, String githubToken, String version){
         if(githubToken == null) return false;
 
-        File libraryFolder = new File("libs");
+        File libraryFolder = new File(project.getProjectDir().getAbsolutePath()+"/libs");
         libraryFolder.mkdirs();
 
         File libraryFile = new File(libraryFolder.getAbsolutePath()+"/BasePlugin.jar");

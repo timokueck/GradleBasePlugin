@@ -52,7 +52,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         getShadowJar(project).dependsOn("generateMetaFiles");
 
         project.getTasks().getByName("build").dependsOn("shadowJar");
-        project.getTasks().getByName("build").doLast(this::onBuildCompletion);
+        project.getTasks().getByName("build").doLast(this::uploadToRemotes);
 
         // Add onProjectEvaluation hook
         project.afterEvaluate(this::onProjectEvaluation);
@@ -67,7 +67,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         log("Plugin: "+project.getName()+" on Version: "+meta.version);
         log();
 
-        if(ResourceManager.loadBasePlugin(githubToken, meta.baseVersion)){
+        if(ResourceManager.loadBasePlugin(project, githubToken, meta.baseVersion)){
             log("Successfully retrieved BasePlugin.jar from Github...");
         } else {
             log(Color.RED+"Could not retrieve BasePlugin.jar from Github... Using older build if available");
@@ -94,7 +94,7 @@ public class GradleBasePlugin implements Plugin<Project> {
     }
 
     /* After the build prcoess is completed, the file will be uploaded to all remotes */
-    private void onBuildCompletion(Task buildTask){
+    private void uploadToRemotes(Task buildTask){
         File file = new File(DeploymentFile.getLocalOutputPath()+"/"+buildTask.getProject().getName()+".jar");
 
         for(DeploymentFile.Remote all : DeploymentFile.getRemotes()){
