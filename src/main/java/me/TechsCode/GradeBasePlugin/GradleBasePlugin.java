@@ -3,7 +3,6 @@ package me.TechsCode.GradeBasePlugin;
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar;
 import me.TechsCode.GradeBasePlugin.extensions.MetaExtension;
 import me.TechsCode.GradeBasePlugin.tasks.GenerateMetaFilesTask;
-import me.TechsCode.GradeBasePlugin.tasks.ReleaseTask;
 import me.TechsCode.GradeBasePlugin.tasks.VersionTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -44,7 +43,6 @@ public class GradleBasePlugin implements Plugin<Project> {
 
         // Registering GradleBasePlugin tasks
         project.getTasks().create("generateMetaFiles", GenerateMetaFilesTask.class);
-        project.getTasks().create("release", ReleaseTask.class);
         project.getTasks().create("version", VersionTask.class);
 
         // Setting up Shadow Plugin

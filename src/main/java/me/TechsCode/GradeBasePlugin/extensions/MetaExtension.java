@@ -20,7 +20,7 @@ public class MetaExtension {
         }
 
         if(baseVersion == null){
-            GradleBasePlugin.log("Could not find a 'baseVersion' field in your build.gradle. Typically this is something like 'b"+new Random().nextInt(200) +"'");
+            GradleBasePlugin.log("Could not find a 'baseVersion' field in your build.gradle. Typically this is something like 'build-xxx'");
             GradleBasePlugin.log();
             GradleBasePlugin.log(Color.RED+"Please check the GitHub page of GradleBasePlugin for more information");
             return true;
