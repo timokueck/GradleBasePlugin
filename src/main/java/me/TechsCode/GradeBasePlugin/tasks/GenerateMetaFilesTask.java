@@ -3,10 +3,12 @@ package me.TechsCode.GradeBasePlugin.tasks;
 import me.TechsCode.GradeBasePlugin.Color;
 import me.TechsCode.GradeBasePlugin.GradleBasePlugin;
 import me.TechsCode.GradeBasePlugin.extensions.MetaExtension;
+import org.apache.commons.io.FileUtils;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class GenerateMetaFilesTask extends DefaultTask {
 
@@ -30,6 +32,7 @@ public class GenerateMetaFilesTask extends DefaultTask {
             PrintWriter writer = new PrintWriter(pluginYml, "UTF-8");
             writer.println("name: "+getProject().getName());
             writer.println("version: "+meta.version);
+            writer.println("build: "+getBuildNumber());
             writer.println("main: me.TechsCode."+getProject().getName()+".base.loader.SpigotLoader");
             writer.println("api-version: 1.13");
             if(meta.loadAfter != null) writer.println("softdepend: "+meta.loadAfter);
@@ -40,11 +43,28 @@ public class GenerateMetaFilesTask extends DefaultTask {
             writer = new PrintWriter(bungeeYml, "UTF-8");
             writer.println("name: "+getProject().getName());
             writer.println("version: "+meta.version);
+            writer.println("build: "+getBuildNumber());
             writer.println("main: me.TechsCode."+getProject().getName()+".base.loader.BungeeLoader");
             writer.println("author: Tech");
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private int getBuildNumber(){
+        File ciFile = new File(getProject().getProjectDir().getAbsolutePath()+"/ci.yml");
+
+        if(ciFile.exists()){
+            try {
+                String line = FileUtils.readLines(ciFile, StandardCharsets.UTF_8).get(0).replace("build-", "");
+
+                return Integer.parseInt(line);
+            } catch (IOException e) {
+                return 0;
+            }
+        }
+
+        return 0;
     }
 }
