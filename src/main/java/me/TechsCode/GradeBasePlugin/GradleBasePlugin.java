@@ -3,7 +3,6 @@ package me.TechsCode.GradeBasePlugin;
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar;
 import me.TechsCode.GradeBasePlugin.extensions.MetaExtension;
 import me.TechsCode.GradeBasePlugin.tasks.GenerateMetaFilesTask;
-import me.TechsCode.GradeBasePlugin.tasks.VersionTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -36,6 +35,8 @@ public class GradleBasePlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
+        DeploymentFile deploymentFile = new DeploymentFile(project);
+
         this.meta = project.getExtensions().create("meta", MetaExtension.class);
         this.githubToken = System.getenv("GITHUB_TOKEN");
 
@@ -43,16 +44,15 @@ public class GradleBasePlugin implements Plugin<Project> {
 
         // Registering GradleBasePlugin tasks
         project.getTasks().create("generateMetaFiles", GenerateMetaFilesTask.class);
-        project.getTasks().create("version", VersionTask.class);
 
         // Setting up Shadow Plugin
         project.getPlugins().apply("com.github.johnrengelman.shadow");
         getShadowJar(project).getArchiveFileName().set(project.getName()+".jar");
-        getShadowJar(project).setProperty("destinationDir", project.file(DeploymentFile.getLocalOutputPath()));
+        getShadowJar(project).setProperty("destinationDir", project.file(deploymentFile.getLocalOutputPath()));
         getShadowJar(project).dependsOn("generateMetaFiles");
 
         project.getTasks().getByName("build").dependsOn("shadowJar");
-        project.getTasks().getByName("build").doLast(this::uploadToRemotes);
+        project.getTasks().getByName("build").doLast((task) -> uploadToRemotes(task, deploymentFile));
 
         // Add onProjectEvaluation hook
         project.afterEvaluate(this::onProjectEvaluation);
@@ -94,10 +94,10 @@ public class GradleBasePlugin implements Plugin<Project> {
     }
 
     /* After the build prcoess is completed, the file will be uploaded to all remotes */
-    private void uploadToRemotes(Task buildTask){
-        File file = new File(DeploymentFile.getLocalOutputPath()+"/"+buildTask.getProject().getName()+".jar");
+    private void uploadToRemotes(Task buildTask, DeploymentFile deploymentFile){
+        File file = new File(deploymentFile.getLocalOutputPath()+"/"+buildTask.getProject().getName()+".jar");
 
-        for(DeploymentFile.Remote all : DeploymentFile.getRemotes()){
+        for(DeploymentFile.Remote all : deploymentFile.getRemotes()){
             if(all.isEnabled()){
                 all.uploadFile(file);
             }

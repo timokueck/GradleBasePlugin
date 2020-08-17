@@ -2,6 +2,7 @@ package me.TechsCode.GradeBasePlugin;
 
 import com.jcraft.jsch.*;
 import org.apache.commons.io.FileUtils;
+import org.gradle.api.Project;
 import org.gradle.internal.impldep.com.google.gson.JsonObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -22,8 +23,8 @@ public class DeploymentFile {
 
     private static JSONObject root;
 
-    static  {
-        File file = new File("deployment.json");
+    public DeploymentFile(Project project){
+        File file = new File(project.getProjectDir().getAbsolutePath()+"/deployment.json");
 
         if(!file.exists()){
             try {
@@ -44,12 +45,13 @@ public class DeploymentFile {
         }
     }
 
-    public static String getLocalOutputPath(){
+
+    public String getLocalOutputPath(){
         JSONObject local = (JSONObject) root.get("local");
         return (String) local.get("path");
     }
 
-    public static List<Remote> getRemotes(){
+    public List<Remote> getRemotes(){
         List<Remote> remotes = new ArrayList<>();
 
         for(Object object : (JSONArray) root.get("remotes")){
@@ -61,11 +63,7 @@ public class DeploymentFile {
         return remotes;
     }
 
-    public static Optional<Remote> getReleaseRemote(){
-        return root.containsKey("releaseRemote") ? Optional.of(new Remote((JSONObject) root.get("releaseRemote"))) : Optional.empty();
-    }
-
-    public static class Remote {
+    public class Remote {
 
         private boolean enabled;
         private String hostname, username, password, path;
