@@ -63,10 +63,10 @@ public class ResourceManager {
         return true;
     }
 
-    public static void createGitIgnore(){
+    public static void createGitIgnore(Project project){
         try {
             InputStream src = ResourceManager.class.getResourceAsStream("/gitignore.file");
-            Files.copy(src, Paths.get(new File(".gitignore").toURI()), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(src, Paths.get(new File(project.getProjectDir().getAbsolutePath()+"/.gitignore").toURI()), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }

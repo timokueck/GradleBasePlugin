@@ -40,7 +40,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         this.meta = project.getExtensions().create("meta", MetaExtension.class);
         this.githubToken = System.getenv("GITHUB_TOKEN");
 
-        ResourceManager.createGitIgnore();
+        ResourceManager.createGitIgnore(project);
 
         // Registering GradleBasePlugin tasks
         project.getTasks().create("generateMetaFiles", GenerateMetaFilesTask.class);
