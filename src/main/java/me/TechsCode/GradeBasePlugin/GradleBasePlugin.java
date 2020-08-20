@@ -8,6 +8,7 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 public class GradleBasePlugin implements Plugin<Project> {
@@ -40,7 +41,10 @@ public class GradleBasePlugin implements Plugin<Project> {
         this.meta = project.getExtensions().create("meta", MetaExtension.class);
         this.githubToken = System.getenv("GITHUB_TOKEN");
 
-        ResourceManager.createGitIgnore(project);
+        try {
+            ResourceManager.createGitIgnore(project);
+            ResourceManager.createWorkflow(project);
+        } catch (IOException ignored){}
 
         // Registering GradleBasePlugin tasks
         project.getTasks().create("generateMetaFiles", GenerateMetaFilesTask.class);

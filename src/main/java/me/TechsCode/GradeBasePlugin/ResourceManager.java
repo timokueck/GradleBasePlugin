@@ -63,13 +63,14 @@ public class ResourceManager {
         return true;
     }
 
-    public static void createGitIgnore(Project project){
-        try {
-            InputStream src = ResourceManager.class.getResourceAsStream("/gitignore.file");
-            Files.copy(src, Paths.get(new File(project.getProjectDir().getAbsolutePath()+"/.gitignore").toURI()), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void createGitIgnore(Project project) throws IOException {
+        InputStream src = ResourceManager.class.getResourceAsStream("/gitignore.file");
+        Files.copy(src, Paths.get(new File(project.getProjectDir().getAbsolutePath()+"/.gitignore").toURI()), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public static void createWorkflow(Project project) throws IOException {
+        InputStream src = ResourceManager.class.getResourceAsStream("/workflows/build.yml");
+        Files.copy(src, Paths.get(new File(project.getProjectDir().getAbsolutePath()+"/.github/workflows/build.yml").toURI()), StandardCopyOption.REPLACE_EXISTING);
     }
 
 
