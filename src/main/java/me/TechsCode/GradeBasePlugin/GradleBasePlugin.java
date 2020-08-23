@@ -16,7 +16,8 @@ public class GradleBasePlugin implements Plugin<Project> {
     private static final String[] repositories = new String[]{
             "https://hub.spigotmc.org/nexus/content/repositories/snapshots/",
             "https://oss.sonatype.org/content/repositories/snapshots",
-            "https://jitpack.io"
+            "https://jitpack.io",
+            "https://repo.codemc.io/repository/maven-public/"
     };
 
     private static final String[] dependencies = new String[]{
