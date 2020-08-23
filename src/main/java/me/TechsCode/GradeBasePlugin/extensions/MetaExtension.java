@@ -10,6 +10,7 @@ public class MetaExtension {
     public String version;
     public String baseVersion;
     public String loadAfter, loadBefore, load;
+    public boolean excludeBasePlugin;
 
     public boolean validate() {
         if(version == null){

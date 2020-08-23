@@ -71,11 +71,14 @@ public class GradleBasePlugin implements Plugin<Project> {
         log("Plugin: "+project.getName()+" on Version: "+meta.version);
         log();
 
-        if(ResourceManager.loadBasePlugin(project, githubToken, meta.baseVersion)){
-            log("Successfully retrieved BasePlugin.jar from Github...");
-        } else {
-            log(Color.RED+"Could not retrieve BasePlugin.jar from Github... Using older build if available");
-            log(Color.RED+"Make sure that you have set the GITHUB_TOKEN environment variable that has access to the BasePlugin repository");
+        if(!meta.excludeBasePlugin){
+            if(ResourceManager.loadBasePlugin(project, githubToken, meta.baseVersion)){
+                log("Successfully retrieved BasePlugin.jar from Github...");
+                project.getDependencies().add("implementation", project.files("libs/BasePlugin.jar"));
+            } else {
+                log(Color.RED+"Could not retrieve BasePlugin.jar from Github... Using older build if available");
+                log(Color.RED+"Make sure that you have set the GITHUB_TOKEN environment variable that has access to the BasePlugin repository");
+            }
         }
 
         // Setting properties
@@ -90,7 +93,6 @@ public class GradleBasePlugin implements Plugin<Project> {
         Arrays.stream(repositories).forEach(url -> project.getRepositories().maven((maven) -> maven.setUrl(url)));
 
         // Setting up dependencies
-        project.getDependencies().add("implementation", project.files("libs/BasePlugin.jar"));
         Arrays.stream(dependencies).map(entry -> entry.split("#")).forEach(confAndUrl -> project.getDependencies().add(confAndUrl[0], confAndUrl[1]));
 
         // Setting up relocations
