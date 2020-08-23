@@ -71,7 +71,7 @@ public class GradleBasePlugin implements Plugin<Project> {
         log("Plugin: "+project.getName()+" on Version: "+meta.version);
         log();
 
-        if(!meta.excludeBasePlugin){
+        if(!meta.baseVersion.equalsIgnoreCase("none")){
             if(ResourceManager.loadBasePlugin(project, githubToken, meta.baseVersion)){
                 log("Successfully retrieved BasePlugin.jar from Github...");
                 project.getDependencies().add("implementation", project.files("libs/BasePlugin.jar"));
