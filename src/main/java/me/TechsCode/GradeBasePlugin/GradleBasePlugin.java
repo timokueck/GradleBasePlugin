@@ -46,7 +46,7 @@ public class GradleBasePlugin implements Plugin<Project> {
             ResourceManager.createGitIgnore(project);
             ResourceManager.createWorkflow(project);
         } catch (IOException ignored){
-            System.out.println(ignored.getMessage());
+            ignored.printStackTrace();
         }
 
         // Registering GradleBasePlugin tasks
