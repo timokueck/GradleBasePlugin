@@ -69,8 +69,11 @@ public class ResourceManager {
     }
 
     public static void createWorkflow(Project project) throws IOException {
+        File destination = new File(project.getProjectDir().getAbsolutePath()+"/.github/workflows/build.yml");
+        destination.mkdirs();
+
         InputStream src = ResourceManager.class.getResourceAsStream("/workflows/build.yml");
-        Files.copy(src, Paths.get(new File(project.getProjectDir().getAbsolutePath()+"/.github/workflows/build.yml").toURI()), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(src, Paths.get(destination.toURI()), StandardCopyOption.REPLACE_EXISTING);
     }
 
 
