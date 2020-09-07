@@ -24,14 +24,18 @@ public class DeploymentFile {
     private static JSONObject root;
 
     public DeploymentFile(Project project){
-        File file = new File(project.getProjectDir().getAbsolutePath()+"/deployment.json");
+        File file = new File(System.getProperty("user.home")+"/deployment.json");
 
         if(!file.exists()){
-            try {
-                InputStream src = ResourceManager.class.getResourceAsStream("/deployment.json");
-                Files.copy(src, Paths.get(file.toURI()), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                e.printStackTrace();
+            file = new File(project.getProjectDir().getAbsolutePath()+"/deployment.json");
+
+            if(!file.exists()){
+                try {
+                    InputStream src = ResourceManager.class.getResourceAsStream("/deployment.json");
+                    Files.copy(src, Paths.get(file.toURI()), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
